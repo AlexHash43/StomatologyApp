@@ -30,6 +30,7 @@ namespace Stomatology3
         {
 
             services.AddControllersWithViews();
+            //services.AddSwaggerGen();
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 if (!options.IsConfigured) options.UseSqlServer(Configuration.GetConnectionString("Stomatology"));

@@ -24,7 +24,7 @@ namespace Stomatology3.Controllers.Auth
         private readonly UserManager<User> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly IJwtHandlerAuth _jwtHandlerAuth;
-        private readonly RoleManager<User> _roleManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         /// <summary>
         ///     Authentication controller constructor. Takes:
@@ -39,7 +39,7 @@ namespace Stomatology3.Controllers.Auth
             SignInManager<User> signInManager,
             ApplicationDbContext context,
             IJwtHandlerAuth jwtHandlerAuth,
-            RoleManager<User> roleManager)
+            RoleManager<IdentityRole> roleManager)
 
         {
             _userManager = userManager;

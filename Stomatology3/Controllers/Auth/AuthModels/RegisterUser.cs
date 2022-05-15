@@ -15,7 +15,7 @@ namespace Stomatology3.Controllers.Auth.AuthModels
         /// <summary>
         ///     Property for reading and writing the username from client.
         /// </summary>
-        public string UserName { get; set; }
+        //public string UserName { get; set; }
         /// <summary>
         ///     Property for reading and writing the email from client.
         /// </summary>

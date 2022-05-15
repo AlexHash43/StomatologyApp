@@ -27,7 +27,7 @@ namespace Stomatology3.Controllers.Auth
                     new Claim(ClaimsIdentity.DefaultNameClaimType, authUser.Email),
                     new Claim(ClaimsIdentity.DefaultRoleClaimType, role)
                 }),
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(Encoding.UTF32.GetBytes(_privateKey)),
                     SecurityAlgorithms.HmacSha256Signature)

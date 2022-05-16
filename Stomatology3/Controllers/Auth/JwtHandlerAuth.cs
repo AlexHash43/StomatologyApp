@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Stomatology3.Controllers.Auth
 {
-    public class JwtHandlerAuth :IJwtHandlerAuth
+    public class JwtHandlerAuth : IJwtHandlerAuth
     {
         private string _privateKey;
 

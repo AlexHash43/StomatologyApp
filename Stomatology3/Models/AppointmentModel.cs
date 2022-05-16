@@ -8,8 +8,8 @@ namespace Stomatology3.Models
     {
         [Key]
         public Guid Id { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
+        public DateTime AppointmentStart { get; set; }
+        //public DateTime End { get; set; }
         [ForeignKey("ProcedureId")]
         public Guid ProcedureId { get; set; }
         public ProcedureType PrType { get; set; }
@@ -20,8 +20,7 @@ namespace Stomatology3.Models
         public Guid PatientId { get; set; }
         //public User Patient { get; set; }
         public DateTime CreatedOn { get; set; }
-        public int Completed { get; set; }
-        public string Status { get; set; } = "free";
+        public AppointmentStatus Status { get; set; }
 
     }
 }

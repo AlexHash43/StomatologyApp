@@ -51,7 +51,7 @@ namespace Stomatology3.Controllers.Auth
 
         // POST api/<AuthController>
         [AllowAnonymous]
-        [HttpPost]
+        [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
        async public Task<IActionResult> LoginPost(AuthUser authUser)

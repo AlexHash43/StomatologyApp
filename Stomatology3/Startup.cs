@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Threading.Tasks;
+using Stomatology3.Interfaces;
+using Stomatology3.Controllers.Auth;
 
 namespace Stomatology3
 {
@@ -73,6 +75,14 @@ namespace Stomatology3
             {
                 configuration.RootPath = "ClientApp/build";
             });
+            services.AddSingleton<IJwtHandlerAuth>(new JwtHandlerAuth(Configuration.GetSection("Jwt:PrivateKey").Value));
+
+            //services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("admin", policy => policy.RequireRole("admin"));
+            //    options.AddPolicy("user", policy => policy.RequireRole("user"));
+            //    options.AddPolicy("taskUser", policy => policy.RequireRole("manager", "exec"));
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -94,6 +104,9 @@ namespace Stomatology3
             app.UseSpaStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization(); 
 
             app.UseEndpoints(endpoints =>
             {

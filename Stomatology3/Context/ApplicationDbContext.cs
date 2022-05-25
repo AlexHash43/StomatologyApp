@@ -20,6 +20,5 @@ namespace Stomatology3.Context
             }
             base.OnModelCreating(modelBuilder);
         }
-
     }
 }

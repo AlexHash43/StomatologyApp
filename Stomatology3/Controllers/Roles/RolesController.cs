@@ -13,8 +13,9 @@ using System.Threading.Tasks;
 namespace Stomatology3.Controllers.Roles
 {
     //[Authorize(Policy = "admin" )]
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+
     public class RolesController : ControllerBase
     {
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -92,8 +93,15 @@ namespace Stomatology3.Controllers.Roles
 
         // DELETE api/<RolesController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> DeleteRole(RoleModel roleModel)
         {
+            if (roleModel == null)  return BadRequest(AppResources.NullRole);
+            var role = _context.Roles.FirstOrDefault(role => role.Id == roleModel.Id);
+            if (role == null) return BadRequest(AppResources.RoleDoesNotExist);
+            var result = await _roleManager.DeleteAsync(role);
+            if (!result.Succeeded) return BadRequest(AppResources.RoleDeletionImpossible);
+            return Ok(AppResources.RoleDeleted);    
+
         }
     }
 }

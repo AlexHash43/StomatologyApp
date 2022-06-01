@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Stomatology3.Interfaces;
 using Stomatology3.Controllers.Auth;
+using Stomatology3.Repositories;
 
 namespace Stomatology3
 {
@@ -69,6 +70,7 @@ namespace Stomatology3
                     }
                 };
             });
+            
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -76,6 +78,7 @@ namespace Stomatology3
                 configuration.RootPath = "ClientApp/build";
             });
             services.AddSingleton<IJwtHandlerAuth>(new JwtHandlerAuth(Configuration.GetSection("Jwt:PrivateKey").Value));
+            services.AddScoped<IAppointmentsRepository1, AppointmentsRepository>();
 
             //services.AddAuthorization(options =>
             //{

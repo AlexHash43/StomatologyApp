@@ -11,12 +11,13 @@ using System.Threading.Tasks;
 
 namespace Stomatology3.Repositories
 {
-    public class AppointmentsRepository: IAppointmentsRepository
+    public class AppointmentsRepository : IAppointmentsRepository1
+    //: IAppointmentsRepository
     {
         private readonly ApplicationDbContext _context;
         //private readonly UserManager<User> _userManager;
 
-        public AppointmentsRepository (ApplicationDbContext context, UserManager<User> userManager)
+        public AppointmentsRepository(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
             //_userManager = userManager;
@@ -27,9 +28,9 @@ namespace Stomatology3.Repositories
         }
 
         public async Task<int> DeleteAppointmentAsync(Guid id, CancellationToken cancellationToken)
-        {            
+        {
             var appointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-                _context.Appointments.Remove(appointment);
+            _context.Appointments.Remove(appointment);
             return await _context.SaveChangesAsync(cancellationToken);
         }
 

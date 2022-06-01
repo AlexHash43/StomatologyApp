@@ -22,9 +22,11 @@ namespace Stomatology3.Repositories
             _context = context;
             //_userManager = userManager;
         }
-        public async Task CreateAppointmentAsync(AppointmentModel appointment, CancellationToken cancellationToken)
+        public async Task<AppointmentModel> CreateAppointmentAsync(AppointmentModel appointment, CancellationToken cancellationToken)
         {
             await _context.AddAsync(appointment);
+            await _context.SaveChangesAsync();
+            
         }
 
         public async Task<int> DeleteAppointmentAsync(Guid id, CancellationToken cancellationToken)

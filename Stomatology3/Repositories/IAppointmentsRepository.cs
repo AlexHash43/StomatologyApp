@@ -10,9 +10,9 @@ namespace Stomatology3.Repositories
     public interface IAppointmentsRepository
     {
         Task<AppointmentDto> CreateAppointmentAsync(ClaimsPrincipal principal, CreateAppointmentModel appointment, CancellationToken cancellationToken);
-        Task<int> DeleteAppointmentAsync(string id, CancellationToken cancellationToken);
+        Task<AppointmentDto> DeleteAppointmentAsync(string id, CancellationToken cancellationToken);
         Task<AppointmentDto> GetAppointmentAsync(string id);
         Task<IEnumerable<AppointmentReturn>> GetAppointmentsAsync();
-        Task<int> UpdateAppointmentAsync(AppointmentModel appointment, CancellationToken cancellationToken);
+        Task<AppointmentDto> UpdateAppointmentAsync(AppointmentModel appointment, CancellationToken cancellationToken);
     }
 }

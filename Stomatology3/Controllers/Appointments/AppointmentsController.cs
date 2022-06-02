@@ -31,10 +31,10 @@ namespace Stomatology3.Controllers.Appointments
         [HttpGet]
         public async Task<IActionResult> GetAppointments()
         {
-            var items = (await _repository.GetAppointmentsAsync()).ToList();
+            var items = await _repository.GetAppointmentsAsync();
 
 
-            if(items == null) return NotFound();
+            if(!items.Any()) return NotFound();
             return Ok(items);
         }
 
@@ -53,13 +53,25 @@ namespace Stomatology3.Controllers.Appointments
             if(appt == null) return NotFound();
             return Ok(appt);
         }
+        [HttpPost("Edit")]
+        public async Task<ActionResult<AppointmentDto>> UpdateAppointment(AppointmentModel appointment, CancellationToken cancellationToken)
+        {
+            var result = await _repository.UpdateAppointmentAsync(appointment, cancellationToken);
+            if(result == null) return NotFound();
+            return Ok(result);
+        }
+
+
         [HttpDelete]
         public async Task<IActionResult> DeleteAppointment(string id, CancellationToken cancellationToken)
         {
             var result = await _repository.DeleteAppointmentAsync(id, cancellationToken);
-            if (result == null) return NotFound();
+            if (result != null) return NotFound();
             return Ok(AppResources.TaskDeleted);
         }
+
+
+
 
 
 

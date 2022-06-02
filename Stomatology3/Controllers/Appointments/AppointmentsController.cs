@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Stomatology3.Controllers.Appointments.AppointmentmModels;
 using Stomatology3.Models;
 using Stomatology3.Repositories;
+using Stomatology3.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,10 +18,10 @@ namespace Stomatology3.Controllers.Appointments
     [ApiController]
     public class AppointmentsController : ControllerBase
     {
-        private readonly IAppointmentsRepository1 _repository;
+        private readonly IAppointmentsRepository _repository;
         private readonly ILogger<AppointmentsController> _logger;
 
-        public AppointmentsController (IAppointmentsRepository1 repository, ILogger<AppointmentsController> logger)
+        public AppointmentsController (IAppointmentsRepository repository, ILogger<AppointmentsController> logger)
         {
             _repository = repository;
             _logger = logger;
@@ -36,7 +39,7 @@ namespace Stomatology3.Controllers.Appointments
         }
 
         [HttpGet("id")]
-        public async Task<ActionResult<AppointmentModel>> GetAppointment(Guid id)
+        public async Task<ActionResult<AppointmentDto>> GetAppointment(string id)
         {
             var result = (await _repository.GetAppointmentAsync(id));
             if (result == null) return NotFound();
@@ -44,11 +47,18 @@ namespace Stomatology3.Controllers.Appointments
 
         }
         [HttpPost]
-        public async Task<IActionResult> CreateAppointment(AppointmentModel appointment, CancellationToken cancellationToken) 
+        public async Task<ActionResult<AppointmentModel>> CreateAppointment(ClaimsPrincipal principal, CreateAppointmentModel appointment, CancellationToken cancellationToken) 
         { 
-            var result = (await _repository.CreateAppointmentAsync(appointment, cancellationToken));
-            if(result == null) return NotFound();
-            return Ok(result.Appointment);
+            var appt = await _repository.CreateAppointmentAsync(principal, appointment, cancellationToken);
+            if(appt == null) return NotFound();
+            return Ok(appt);
+        }
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAppointment(string id, CancellationToken cancellationToken)
+        {
+            var result = await _repository.DeleteAppointmentAsync(id, cancellationToken);
+            if (result == null) return NotFound();
+            return Ok(AppResources.TaskDeleted);
         }
 
 

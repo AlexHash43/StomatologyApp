@@ -78,7 +78,7 @@ namespace Stomatology3
                 configuration.RootPath = "ClientApp/build";
             });
             services.AddSingleton<IJwtHandlerAuth>(new JwtHandlerAuth(Configuration.GetSection("Jwt:PrivateKey").Value));
-            services.AddScoped<IAppointmentsRepository1, AppointmentsRepository>();
+            services.AddScoped<IAppointmentsRepository, AppointmentsRepository>();
 
             //services.AddAuthorization(options =>
             //{

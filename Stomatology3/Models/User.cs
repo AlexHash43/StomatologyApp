@@ -11,7 +11,9 @@ namespace Stomatology3.Models
         [Required, StringLength(50), Display(Name = "Last Name")]
         public string LastName { get; set; }
         [Required, StringLength(100), Display(Name = "Last Name")]
-        public string FullName { get { return FirstName + " " + LastName; } }
+        public string FullName { get; set; }
+        [Required, StringLength(100), Display(Name = "Address")]
+        public string Address { get; set; }
         public virtual ICollection<AppointmentModel> AppointmentModels { get; set; }
 
         //public ICollection<AppointmentModel>? AppointmentModels { get; set; }

@@ -125,10 +125,13 @@ namespace Stomatology3.Controllers.Auth
             var newUser = new User
             {
                 Email = registerUser.Email,
-                PasswordHash = hash,
+                NormalizedEmail = registerUser.Email.ToLower(),
+                PasswordHash = hash,                
                 UserName = registerUser.Email,
+                NormalizedUserName = registerUser.Email.ToLower(),
                 FirstName = registerUser.FirstName,
-                LastName = registerUser.LastName
+                LastName = registerUser.LastName,
+                FullName = $"{registerUser.FirstName} {registerUser.LastName}" ,
             };
             var result = await _userManager.CreateAsync(newUser);
 

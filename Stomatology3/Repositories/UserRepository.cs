@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Stomatology3.Context;
 using Stomatology3.Controllers.Users.UserViewModels;
 using Stomatology3.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,14 +21,46 @@ namespace Stomatology3.Repositories
             _userManager = userManager;
         }
 
-        public async Task<GetUsersModel> GetUsersAsync()
+        public async Task<IEnumerable<GetUsersModel>> GetUsersListAsync()
         {
-            var usersList = _userManager.Users.ToList();
+            var usersList = await _userManager.Users.ToListAsync();
             return usersList.AsEnumerable()
-                .Select(x => new InitialGetUserModel
+                .Select(x => new GetUsersModel
                 {
                     UserName = x.UserName,
-                }
+                    Email = x.Email,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    PhoneNumber = x.PhoneNumber,
+                    Address = x.Address
+                });
         }
+        public async Task<GetUsersModel> GetUserAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            return new GetUsersModel
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                Address = user.Address
+            };
+        }
+        public async Task<GetUsersModel> GetUserByEmailAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            return new GetUsersModel
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                Address = user.Address
+            };
+        }
+        //public async Task<GetUsersModel>  CreateUserAsync()
     }
 }

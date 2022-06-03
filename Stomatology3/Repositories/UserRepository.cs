@@ -27,7 +27,7 @@ namespace Stomatology3.Repositories
             return usersList.AsEnumerable()
                 .Select(x => new GetUsersModel
                 {
-                    UserName = x.UserName,
+                    Id = x.Id,
                     Email = x.Email,
                     FirstName = x.FirstName,
                     LastName = x.LastName,
@@ -40,7 +40,7 @@ namespace Stomatology3.Repositories
             var user = await _userManager.FindByIdAsync(id);
             return new GetUsersModel
             {
-                UserName = user.UserName,
+                Id = user.Id,
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
@@ -53,7 +53,7 @@ namespace Stomatology3.Repositories
             var user = await _userManager.FindByEmailAsync(email);
             return new GetUsersModel
             {
-                UserName = user.UserName,
+                Id = user.Id,
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
@@ -61,6 +61,9 @@ namespace Stomatology3.Repositories
                 Address = user.Address
             };
         }
-        //public async Task<GetUsersModel>  CreateUserAsync()
+        //public async Task<GetUsersModel> UpdateUserAsync(string id)
+        //{
+
+        //}
     }
 }

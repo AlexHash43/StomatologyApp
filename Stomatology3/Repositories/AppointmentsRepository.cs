@@ -15,19 +15,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Stomatology3.Repositories
 {
-    public class AppointmentsRepository :IAppointmentsRepository
+    public class AppointmentsRepository : IAppointmentsRepository
     //: IAppointmentsRepository
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly ClaimsPrincipal _principal;
 
 
-        public AppointmentsRepository(ApplicationDbContext context, UserManager<User> userManager)
+        public AppointmentsRepository(ApplicationDbContext context, UserManager<User> userManager, ClaimsPrincipal principal)
         {
             _context = context;
             _userManager = userManager;
+            _principal = principal;
         }
-        public async Task<AppointmentDto> CreateAppointmentAsync(ClaimsPrincipal principal, CreateAppointmentModel appointment, CancellationToken cancellationToken)
+        public async Task<AppointmentDto> CreateAppointmentAsync(CreateAppointmentModel appointment, CancellationToken cancellationToken)
         {
             //var user = _userManager.GetUserId(User);
             var newAppointment = new AppointmentModel
@@ -36,7 +38,7 @@ namespace Stomatology3.Repositories
                 AppointmentStart = appointment.AppointmentStart,
                 ProcedureId = appointment.ProcedureId,
                 DoctorId = appointment.DoctorId,
-                PatientId = principal.FindFirstValue(ClaimTypes.NameIdentifier),
+                PatientId = _principal.FindFirstValue(ClaimTypes.NameIdentifier),
                 CreatedOn = DateTime.Now,
                 Status = AppointmentStatus.InProgress
             };

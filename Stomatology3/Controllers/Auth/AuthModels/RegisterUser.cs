@@ -7,11 +7,11 @@ namespace Stomatology3.Controllers.Auth.AuthModels
         /// <summary>
         ///     Property for reading and writing the first name client.
         /// </summary>
-        public string FirstName { get; set; }
+        //public string FirstName { get; set; }
         /// <summary>
         ///     Property for reading and writing the last name from client.
         /// </summary>
-        public string LastName { get; set; }
+        //public string LastName { get; set; }
         /// <summary>
         ///     Property for reading and writing the username from client.
         /// </summary>

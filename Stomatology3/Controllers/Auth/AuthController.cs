@@ -10,6 +10,8 @@ using Stomatology3.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,6 +27,7 @@ namespace Stomatology3.Controllers.Auth
         private readonly ApplicationDbContext _context;
         private readonly IJwtHandlerAuth _jwtHandlerAuth;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ClaimsPrincipal _principal;
 
         /// <summary>
         ///     Authentication controller constructor. Takes:
@@ -39,7 +42,8 @@ namespace Stomatology3.Controllers.Auth
             SignInManager<User> signInManager,
             ApplicationDbContext context,
             IJwtHandlerAuth jwtHandlerAuth,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            ClaimsPrincipal principal)
 
         {
             _userManager = userManager;
@@ -47,6 +51,7 @@ namespace Stomatology3.Controllers.Auth
             _context = context;
             _jwtHandlerAuth = jwtHandlerAuth;
             _roleManager = roleManager; 
+            _principal = principal;
         }
 
         // POST api/<AuthController>
@@ -124,14 +129,15 @@ namespace Stomatology3.Controllers.Auth
             var hash = hasher.HashPassword(registerUser, registerUser.Password);
             var newUser = new User
             {
+                Id = new Guid().ToString(),
                 Email = registerUser.Email,
                 NormalizedEmail = registerUser.Email.ToLower(),
                 PasswordHash = hash,                
                 UserName = registerUser.Email,
                 NormalizedUserName = registerUser.Email.ToLower(),
-                FirstName = registerUser.FirstName,
-                LastName = registerUser.LastName,
-                FullName = $"{registerUser.FirstName} {registerUser.LastName}" ,
+                //FirstName = registerUser.FirstName,
+                //LastName = registerUser.LastName,
+                //FullName = $"{registerUser.FirstName} {registerUser.LastName}" ,
             };
             var result = await _userManager.CreateAsync(newUser);
 
@@ -142,5 +148,11 @@ namespace Stomatology3.Controllers.Auth
             }
             else return BadRequest(AppResources.UserRegistrationImpossible);
         }
+        //public async Task<IActionResult> UpdateUserAuthDetailsAsync(RegisterUser registerUser)
+        //{
+        //    if (registerUser is null) return BadRequest(AppResources.NullUser);
+
+
+        //}
     }
 }

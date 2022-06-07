@@ -26,14 +26,17 @@ namespace Stomatology3.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    FullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -49,7 +52,7 @@ namespace Stomatology3.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProcedureType",
+                name: "ProcedureTypes",
                 columns: table => new
                 {
                     ProcId = table.Column<int>(type: "int", nullable: false)
@@ -58,7 +61,7 @@ namespace Stomatology3.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProcedureType", x => x.ProcId);
+                    table.PrimaryKey("PK_ProcedureTypes", x => x.ProcId);
                 });
 
             migrationBuilder.CreateTable(
@@ -168,44 +171,44 @@ namespace Stomatology3.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppointmentModel",
+                name: "Appointments",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AppointmentStart = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ProcedureId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PrTypeProcId = table.Column<int>(type: "int", nullable: true),
-                    DoctorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PatientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProcedureId = table.Column<int>(type: "int", nullable: false),
+                    DoctorId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PatientId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    ProcedureTypeProcId = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppointmentModel", x => x.Id);
+                    table.PrimaryKey("PK_Appointments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AppointmentModel_AspNetUsers_UserId",
+                        name: "FK_Appointments_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_AppointmentModel_ProcedureType_PrTypeProcId",
-                        column: x => x.PrTypeProcId,
-                        principalTable: "ProcedureType",
+                        name: "FK_Appointments_ProcedureTypes_ProcedureTypeProcId",
+                        column: x => x.ProcedureTypeProcId,
+                        principalTable: "ProcedureTypes",
                         principalColumn: "ProcId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppointmentModel_PrTypeProcId",
-                table: "AppointmentModel",
-                column: "PrTypeProcId");
+                name: "IX_Appointments_ProcedureTypeProcId",
+                table: "Appointments",
+                column: "ProcedureTypeProcId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppointmentModel_UserId",
-                table: "AppointmentModel",
+                name: "IX_Appointments_UserId",
+                table: "Appointments",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -251,7 +254,7 @@ namespace Stomatology3.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AppointmentModel");
+                name: "Appointments");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -269,7 +272,7 @@ namespace Stomatology3.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "ProcedureType");
+                name: "ProcedureTypes");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

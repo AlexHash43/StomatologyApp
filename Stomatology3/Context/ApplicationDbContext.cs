@@ -8,7 +8,7 @@ namespace Stomatology3.Context
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        public DbSet<User> Users { get; set; }
+        public override DbSet<User> Users { get; set; }
         public DbSet<AppointmentModel> Appointments { get; set; }
         public DbSet<ProcedureType> ProcedureTypes { get; set; }
         //on tableCreation makes table names singular(whithout s)
@@ -16,7 +16,18 @@ namespace Stomatology3.Context
         {
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
-                modelBuilder.Entity(entityType.ClrType).ToTable(entityType.ClrType.Name);
+                modelBuilder.Entity<User>().Property(b => b.Email).IsRequired();
+                //modelBuilder.Entity<User>().Property(b => b.NormalizedEmail).IsRequired();
+                modelBuilder.Entity<User>().Property(b => b.UserName).IsRequired();
+                //modelBuilder.Entity<User>().Property(b => b.NormalizedUserName).IsRequired();
+                modelBuilder.Entity<User>().Property(b => b.PasswordHash).IsRequired();
+                modelBuilder.Entity<User>().Property(b => b.CreatedOn).IsRequired();
+                //modelBuilder.Entity<User>().Property(b => b.EmailConfirmed).IsRequired(false);
+                //modelBuilder.Entity<User>().Property(b => b.PhoneNumberConfirmed).IsRequired(false);
+                //modelBuilder.Entity<User>().Property(b => b.TwoFactorEnabled).IsRequired(false);
+                //modelBuilder.Entity<User>().Property(b => b.LockoutEnabled).IsRequired(false);
+                //modelBuilder.Entity<User>().Property(b => b.AccessFailedCount).IsRequired(false);
+
             }
             base.OnModelCreating(modelBuilder);
         }

@@ -152,9 +152,8 @@ namespace Stomatology3.Migrations
 
             modelBuilder.Entity("Stomatology3.Models.AppointmentModel", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("AppointmentStart")
                         .HasColumnType("datetime2");
@@ -162,17 +161,17 @@ namespace Stomatology3.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("DoctorId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("DoctorId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("PatientId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("PatientId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PrTypeProcId")
+                    b.Property<int>("ProcedureId")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("ProcedureId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ProcedureTypeProcId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -182,11 +181,11 @@ namespace Stomatology3.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PrTypeProcId");
+                    b.HasIndex("ProcedureTypeProcId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AppointmentModel");
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("Stomatology3.Models.ProcedureType", b =>
@@ -203,7 +202,7 @@ namespace Stomatology3.Migrations
 
                     b.HasKey("ProcId");
 
-                    b.ToTable("ProcedureType");
+                    b.ToTable("ProcedureTypes");
                 });
 
             modelBuilder.Entity("Stomatology3.Models.User", b =>
@@ -214,11 +213,19 @@ namespace Stomatology3.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Address")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -226,12 +233,14 @@ namespace Stomatology3.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("FullName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -250,6 +259,7 @@ namespace Stomatology3.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
@@ -265,6 +275,7 @@ namespace Stomatology3.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -334,15 +345,13 @@ namespace Stomatology3.Migrations
 
             modelBuilder.Entity("Stomatology3.Models.AppointmentModel", b =>
                 {
-                    b.HasOne("Stomatology3.Models.ProcedureType", "PrType")
+                    b.HasOne("Stomatology3.Models.ProcedureType", null)
                         .WithMany("AppointmentModels")
-                        .HasForeignKey("PrTypeProcId");
+                        .HasForeignKey("ProcedureTypeProcId");
 
                     b.HasOne("Stomatology3.Models.User", null)
                         .WithMany("AppointmentModels")
                         .HasForeignKey("UserId");
-
-                    b.Navigation("PrType");
                 });
 
             modelBuilder.Entity("Stomatology3.Models.ProcedureType", b =>

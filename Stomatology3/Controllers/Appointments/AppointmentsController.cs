@@ -20,13 +20,13 @@ namespace Stomatology3.Controllers.Appointments
     {
         private readonly IAppointmentsRepository _repository;
         private readonly ILogger<AppointmentsController> _logger;
-        private readonly ClaimsPrincipal _principal;
+        //private readonly ClaimsPrincipal _principal;
 
         public AppointmentsController (IAppointmentsRepository repository, ILogger<AppointmentsController> logger, ClaimsPrincipal principal)
         {
             _repository = repository;
             _logger = logger;
-            _principal = principal;
+            //_principal = principal;
         }
 
         // Get Appointments
@@ -56,7 +56,7 @@ namespace Stomatology3.Controllers.Appointments
             return Ok(appt);
         }
         [HttpPost("Edit")]
-        public async Task<ActionResult<AppointmentDto>> UpdateAppointment(AppointmentModel appointment, CancellationToken cancellationToken)
+        public async Task<ActionResult<AppointmentDto>> UpdateAppointment( UpdateAppointment appointment, CancellationToken cancellationToken)
         {
             var result = await _repository.UpdateAppointmentAsync(appointment, cancellationToken);
             if(result == null) return NotFound();

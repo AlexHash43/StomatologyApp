@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Stomatology3.Context;
 using Stomatology3.Controllers.Appointments.AppointmentmModels;
 using Stomatology3.Models;
-using Stomatology3.Resources;
+//using Stomatology3.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,25 +12,27 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using Stomatology3.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace Stomatology3.Repositories
 {
     public class AppointmentsRepository : IAppointmentsRepository
-    //: IAppointmentsRepository
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
-        private readonly ClaimsPrincipal _principal;
-
-
-        public AppointmentsRepository(ApplicationDbContext context, UserManager<User> userManager, ClaimsPrincipal principal)
+        //private readonly ClaimsPrincipal _principal;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public AppointmentsRepository(ApplicationDbContext context, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor) //ClaimsPrincipal principal)
         {
             _context = context;
             _userManager = userManager;
-            _principal = principal;
+            //_principal = principal;
+            _httpContextAccessor = httpContextAccessor;
+
         }
         public async Task<AppointmentDto> CreateAppointmentAsync(CreateAppointmentModel appointment, CancellationToken cancellationToken)
         {
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             //var user = _userManager.GetUserId(User);
             var newAppointment = new AppointmentModel
             {
@@ -38,7 +40,7 @@ namespace Stomatology3.Repositories
                 AppointmentStart = appointment.AppointmentStart,
                 ProcedureId = appointment.ProcedureId,
                 DoctorId = appointment.DoctorId,
-                PatientId = _principal.FindFirstValue(ClaimTypes.NameIdentifier),
+                PatientId = userId,
                 CreatedOn = DateTime.Now,
                 Status = AppointmentStatus.InProgress
             };
@@ -64,6 +66,10 @@ namespace Stomatology3.Repositories
             };
             return appt;
         }
+        //public async Task<IEnumerable<AppointmentReturn>> GetAppointmentsUserAsync()
+        //{
+
+        //}
 
         public async Task<IEnumerable<AppointmentReturn>> GetAppointmentsAsync()
         {
@@ -85,7 +91,7 @@ namespace Stomatology3.Repositories
                 });
         }
 
-        public async Task<AppointmentDto> UpdateAppointmentAsync(AppointmentModel appointment, CancellationToken cancellationToken)
+        public async Task<AppointmentDto> UpdateAppointmentAsync(UpdateAppointment appointment, CancellationToken cancellationToken)
         {
             var appt = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == appointment.Id, cancellationToken);
             appt.AppointmentStart = appointment.AppointmentStart;

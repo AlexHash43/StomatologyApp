@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Stomatology3.Context;
 using Stomatology3.Controllers.Users.RoleManagementModels;
 using Stomatology3.Resources;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -86,9 +88,24 @@ namespace Stomatology3.Controllers.Roles
         }
 
         // PUT api/<RolesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("updaterole")]
+        public async Task<IActionResult> EditRole(RoleModel role)//, CancellationToken cancellationToken)
         {
+            if (role == null) return NotFound("Role model is Empty");
+            var originalRole = await _roleManager.Roles.FirstOrDefaultAsync(a => a.Name.ToLower() == role.Name.ToLower());
+            if (originalRole == null) return NotFound("Original role not found");
+            originalRole.Id = role.Id;
+            originalRole.Name = role.Name;
+            //_context.Roles.Update(originalRole);
+            var updater = await _roleManager.UpdateAsync(originalRole);
+            var saver = await _context.SaveChangesAsync();
+            if (updater.Succeeded && saver!=0)
+            return Ok(new RoleModel 
+            {
+                Id = originalRole.Id,
+                Name=originalRole.Name,
+            });
+            return BadRequest();
         }
 
         // DELETE api/<RolesController>/5
@@ -96,7 +113,7 @@ namespace Stomatology3.Controllers.Roles
         public async Task<IActionResult> DeleteRole(RoleModel roleModel)
         {
             if (roleModel == null)  return BadRequest(AppResources.NullRole);
-            var role = _context.Roles.FirstOrDefault(role => role.Id == roleModel.Id);
+            var role = await _context.Roles.FirstOrDefaultAsync(role => role.Id == roleModel.Id);
             if (role == null) return BadRequest(AppResources.RoleDoesNotExist);
             var result = await _roleManager.DeleteAsync(role);
             if (!result.Succeeded) return BadRequest(AppResources.RoleDeletionImpossible);

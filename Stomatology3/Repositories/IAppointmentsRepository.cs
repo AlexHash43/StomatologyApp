@@ -12,6 +12,6 @@ namespace Stomatology3.Repositories
         Task<AppointmentDto> DeleteAppointmentAsync(string id, CancellationToken cancellationToken);
         Task<AppointmentDto> GetAppointmentAsync(string id);
         Task<IEnumerable<AppointmentReturn>> GetAppointmentsAsync();
-        Task<AppointmentDto> UpdateAppointmentAsync(AppointmentModel appointment, CancellationToken cancellationToken);
+        Task<AppointmentDto> UpdateAppointmentAsync(UpdateAppointment appointment, CancellationToken cancellationToken);
     }
 }

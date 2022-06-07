@@ -30,9 +30,9 @@ namespace Stomatology3.Controllers.Roles
 
         // GET: api/<RolesController>
         [HttpGet]
-        public IActionResult GetRoles()
+        public async Task<IActionResult> GetRoles()
         {
-            var roleDbList = _roleManager.Roles.ToList();
+            var roleDbList = await _roleManager.Roles.ToListAsync();
             if (!roleDbList.Any()) return BadRequest(AppResources.RolesDoNotExist);
             var roleList = roleDbList.Select(role => new RoleModel
             {
@@ -44,23 +44,23 @@ namespace Stomatology3.Controllers.Roles
         }
 
         // GET api/<RolesController>/5
-        [HttpGet("{id}")]
-        public IActionResult GetRoles(string id)
+        [HttpGet("{rolid}")]
+        public async Task< IActionResult> GetRole(string id)
         {
-            var userRoles = _roleManager.Roles.Where(role => role.Id == id).ToList();
+            var userRoles = await _roleManager.Roles.Where(role => role.Id == id).ToListAsync();
             if (!userRoles.Any()) return BadRequest(AppResources.RolesDoNotExist);
-            var roleList = userRoles.Select(role => new RoleModel
+            var roleDetails = userRoles.Select(role => new RoleModel
             {
                 Id = role.Id,
                 Name = role.Name
             });
 
-            return Ok(roleList);
+            return Ok(roleDetails);
         }
 
         // POST api/<RolesController>
         [HttpPost("{name}")]
-        public async Task<IActionResult> CreateRole(string roleName)
+        public async Task<IActionResult> CreateRoleASync(string roleName)
         {
             if(roleName == string.Empty) return BadRequest(AppResources.NullRole);
             
@@ -89,7 +89,7 @@ namespace Stomatology3.Controllers.Roles
 
         // PUT api/<RolesController>/5
         [HttpPut]//("{updaterole}")]
-        public async Task<IActionResult> EditRole(RoleModel role)//, CancellationToken cancellationToken)
+        public async Task<IActionResult> EditRoleASync(RoleModel role)//, CancellationToken cancellationToken)
         {
             if (role == null) return NotFound();
             var originalRole = await _roleManager.Roles.FirstOrDefaultAsync(a => a.Id == role.Id);
@@ -106,15 +106,15 @@ namespace Stomatology3.Controllers.Roles
         }
 
         // DELETE api/<RolesController>/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRole(RoleModel roleModel)
+        [HttpDelete]//("{id}")]
+        public async Task<IActionResult> DeleteRoleAsync(RoleModel roleModel)
         {
             if (roleModel == null)  return BadRequest(AppResources.NullRole);
             var role = await _context.Roles.FirstOrDefaultAsync(role => role.Id == roleModel.Id);
             if (role == null) return BadRequest(AppResources.RoleDoesNotExist);
             var result = await _roleManager.DeleteAsync(role);
             if (!result.Succeeded) return BadRequest(AppResources.RoleDeletionImpossible);
-            return Ok(AppResources.RoleDeleted);    
+            return Ok(GetRoles());  
 
         }
     }

@@ -88,24 +88,21 @@ namespace Stomatology3.Controllers.Roles
         }
 
         // PUT api/<RolesController>/5
-        [HttpPut("updaterole")]
+        [HttpPut]//("{updaterole}")]
         public async Task<IActionResult> EditRole(RoleModel role)//, CancellationToken cancellationToken)
         {
-            if (role == null) return NotFound("Role model is Empty");
-            var originalRole = await _roleManager.Roles.FirstOrDefaultAsync(a => a.Name.ToLower() == role.Name.ToLower());
-            if (originalRole == null) return NotFound("Original role not found");
-            originalRole.Id = role.Id;
+            if (role == null) return NotFound();
+            var originalRole = await _roleManager.Roles.FirstOrDefaultAsync(a => a.Id == role.Id);
+            if (originalRole == null) return NotFound();
             originalRole.Name = role.Name;
             //_context.Roles.Update(originalRole);
             var updater = await _roleManager.UpdateAsync(originalRole);
-            var saver = await _context.SaveChangesAsync();
-            if (updater.Succeeded && saver!=0)
-            return Ok(new RoleModel 
-            {
-                Id = originalRole.Id,
-                Name=originalRole.Name,
-            });
-            return BadRequest();
+            //var saver = await _context.SaveChangesAsync();
+            if (!updater.Succeeded) //|| saver==0)
+                return BadRequest();
+
+            return Ok(GetRoles());
+
         }
 
         // DELETE api/<RolesController>/5

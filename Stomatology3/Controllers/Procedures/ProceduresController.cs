@@ -72,7 +72,7 @@ namespace Stomatology3.Controllers.Procedures
             var addAsync = await _context.ProcedureTypes.AddAsync(newProcedure);//, cancellationToken);
             var saveAsync = await _context.SaveChangesAsync();//cancellationToken);
             if (saveAsync == 0) return BadRequest(AppResources.TaskCreationNotSaved);
-            return Ok(newProcedure);
+            return Ok(GetProceduresAsync());
         }
 
         // PUT api/<ProceduresController>/5

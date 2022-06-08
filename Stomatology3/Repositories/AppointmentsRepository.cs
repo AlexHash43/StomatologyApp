@@ -30,7 +30,7 @@ namespace Stomatology3.Repositories
             _httpContextAccessor = httpContextAccessor;
 
         }
-        public async Task<AppointmentDto> CreateAppointmentAsync(CreateAppointmentModel appointment, CancellationToken cancellationToken)
+        public async Task<AppointmentDto> CreateAppointmentAsync(CreateAppointmentModel appointment)//, CancellationToken cancellationToken)
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             //var user = _userManager.GetUserId(User);
@@ -44,8 +44,8 @@ namespace Stomatology3.Repositories
                 CreatedOn = DateTime.Now,
                 Status = AppointmentStatus.InProgress
             };
-            await _context.AddAsync(appointment);
-            await _context.SaveChangesAsync(cancellationToken);
+            var add = await _context.Appointments.AddAsync(newAppointment);
+            await _context.SaveChangesAsync();//cancellationToken);
             return await GetAppointmentAsync(newAppointment.Id.ToString());
         }
 
@@ -91,9 +91,9 @@ namespace Stomatology3.Repositories
                 });
         }
 
-        public async Task<AppointmentDto> UpdateAppointmentAsync(UpdateAppointment appointment, CancellationToken cancellationToken)
+        public async Task<AppointmentDto> UpdateAppointmentAsync(UpdateAppointment appointment)//, CancellationToken cancellationToken)
         {
-            var appt = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == appointment.Id, cancellationToken);
+            var appt = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == appointment.Id);//, cancellationToken);
             appt.AppointmentStart = appointment.AppointmentStart;
             appt.ProcedureId = appointment.ProcedureId;
             //appt.PrType = appointment.PrType;
@@ -102,15 +102,15 @@ namespace Stomatology3.Repositories
             appt.CreatedOn = appointment.CreatedOn;
             appt.Status = appointment.Status;
             _context.Appointments.Update(appt);
-            await _context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(); //cancellationToken);
             return await GetAppointmentAsync(appointment.Id);
         }
 
-        public async Task<AppointmentDto> DeleteAppointmentAsync(string id, CancellationToken cancellationToken)
+        public async Task<AppointmentDto> DeleteAppointmentAsync(string id)//, CancellationToken cancellationToken)
         {
-            var appointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id.ToString() == id, cancellationToken);
+            var appointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id.ToString() == id);//, cancellationToken);
             _context.Appointments.Remove(appointment);
-            await _context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync();// cancellationToken);
             return await GetAppointmentAsync(id);
         }
     }

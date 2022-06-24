@@ -4,6 +4,6 @@ namespace Stomatology3.Interfaces
 {
     public interface IJwtHandlerAuth
     {
-        string Authentication(AuthUser authUser, string role);
+        string Authentication(UserDto authUser, string role);
     }
 }

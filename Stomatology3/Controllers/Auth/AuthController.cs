@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using System.Security.Claims;
+//using System.Web.Http;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,7 +28,7 @@ namespace Stomatology3.Controllers.Auth
         private readonly ApplicationDbContext _context;
         private readonly IJwtHandlerAuth _jwtHandlerAuth;
         private readonly RoleManager<IdentityRole> _roleManager;
-        //private readonly ClaimsPrincipal _principal;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         /// <summary>
         ///     Authentication controller constructor. Takes:
@@ -42,8 +43,10 @@ namespace Stomatology3.Controllers.Auth
             SignInManager<User> signInManager,
             ApplicationDbContext context,
             IJwtHandlerAuth jwtHandlerAuth,
-            RoleManager<IdentityRole> roleManager)
-            //ClaimsPrincipal principal)
+            RoleManager<IdentityRole> roleManager,
+            IHttpContextAccessor httpContextAccessor
+            )
+
 
         {
             _userManager = userManager;
@@ -51,19 +54,18 @@ namespace Stomatology3.Controllers.Auth
             _context = context;
             _jwtHandlerAuth = jwtHandlerAuth;
             _roleManager = roleManager; 
+            _httpContextAccessor = httpContextAccessor;
+
             //_principal = principal;
         }
 
         // POST api/<AuthController>
         [AllowAnonymous]
         [HttpPost("login")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-       async public Task<IActionResult> LoginPost(AuthUser authUser)
+       async public Task<IActionResult> LoginPost(UserDto authUser)
         {
-            var user = _context.Users.FirstOrDefault(user => user.Email == authUser.Email);
-
             if (authUser is null) return BadRequest(AppResources.NullUser);
+            var user = _context.Users.FirstOrDefault(user => user.Email == authUser.Email);
             if (user is null) return BadRequest(AppResources.UserBadCredentials);
             else
             {
@@ -115,30 +117,23 @@ namespace Stomatology3.Controllers.Auth
 
         [AllowAnonymous]
         [HttpPost("registration")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        async public Task<IActionResult> RegisterPost(RegisterUser registerUser)
+        async public Task<IActionResult> RegisterPost(UserDto registerUser)
         {
             if (registerUser is null) return BadRequest(AppResources.NullUser);
 
             var user = _context.Users.FirstOrDefault(user => user.Email == registerUser.Email);
 
-            if (user != null) return BadRequest(AppResources.UserAlreadyExists);
+            if (user != null) return BadRequest(AppResources.NullUser);
 
-            var hasher = new PasswordHasher<RegisterUser>();
+            var hasher = new PasswordHasher<UserDto>();
             var hash = hasher.HashPassword(registerUser, registerUser.Password);
             var newUser = new User
             {
-                //Id = new Guid().ToString(),
                 Email = registerUser.Email,
-                //NormalizedEmail = registerUser.Email.ToLower(),
                 PasswordHash = hash,                
                 UserName = registerUser.Email,
-                //NormalizedUserName = registerUser.Email.ToLower(),
                 CreatedOn = DateTime.UtcNow,
-                //FirstName = registerUser.FirstName,
-                //LastName = registerUser.LastName,
-                //FullName = $"{registerUser.FirstName} {registerUser.LastName}" ,
+
             };
             var result = await _userManager.CreateAsync(newUser);
 
@@ -149,11 +144,40 @@ namespace Stomatology3.Controllers.Auth
             }
             else return BadRequest(AppResources.UserRegistrationImpossible);
         }
-        //public async Task<IActionResult> UpdateUserAuthDetailsAsync(RegisterUser registerUser)
-        //{
-        //    if (registerUser is null) return BadRequest(AppResources.NullUser);
-
-
-        //}
+        [AllowAnonymous]
+        [HttpPut("changepassword")]
+        public async Task<IActionResult> ChangePasswordAsync(ChangePassword changePassword)
+        {
+            if (changePassword is null) return BadRequest(AppResources.NullUser);
+            var user = await _userManager.FindByEmailAsync(changePassword.Email);
+            var userName = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimsIdentity.DefaultNameClaimType);
+            if (user == null) return BadRequest(AppResources.NullUser);
+            if (string.Compare(user.Email, userName) == 0 )
+            {
+                if (string.Compare(changePassword.NewPassword, changePassword.ConfirmPassword) == 0)
+                {
+                    var result = await _userManager.ChangePasswordAsync(user, changePassword.CurrentPassword, changePassword.NewPassword);
+                    if (!result.Succeeded)
+                    {
+                        var errors = new List<string>();
+                        foreach (var error in result.Errors)
+                        {
+                            errors.Add(error.Description);
+                        }
+                        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = string.Join(", ", errors) });
+                    }
+                    return Ok(new Response
+                    {
+                        Status = "Success",
+                        Message = "Password successfully changed"
+                    });
+                }
+            }
+            else
+            {
+                return BadRequest("The new password and confirm doesn't match");
+            }
+            return Ok(new Response { Status = "Success", Message = "Password successfully changed." });
+        }
     }
 }

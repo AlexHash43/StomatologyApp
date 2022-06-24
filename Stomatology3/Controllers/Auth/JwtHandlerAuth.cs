@@ -17,7 +17,7 @@ namespace Stomatology3.Controllers.Auth
             _privateKey = privateKey;
         }
 
-        public string Authentication(AuthUser authUser, string role)
+        public string Authentication(UserDto authUser, string role)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -26,11 +26,12 @@ namespace Stomatology3.Controllers.Auth
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, authUser.Email),
                     new Claim(ClaimsIdentity.DefaultRoleClaimType, role)
+                    
                 }),
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(Encoding.UTF32.GetBytes(_privateKey)),
-                    SecurityAlgorithms.HmacSha256Signature)
+                    SecurityAlgorithms.HmacSha512Signature)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);

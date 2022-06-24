@@ -28,30 +28,34 @@ namespace Stomatology3.Repositories
             _userManager = userManager;
             //_principal = principal;
             _httpContextAccessor = httpContextAccessor;
-
         }
         public async Task<AppointmentDto> CreateAppointmentAsync(CreateAppointmentModel appointment)//, CancellationToken cancellationToken)
         {
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimsIdentity.DefaultNameClaimType);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
             //var user = _userManager.GetUserId(User);
+       
             var newAppointment = new AppointmentModel
             {
                 Id = Guid.NewGuid().ToString(),
                 AppointmentStart = appointment.AppointmentStart,
                 ProcedureId = appointment.ProcedureId,
                 DoctorId = appointment.DoctorId,
-                PatientId = userId,
+                PatientId = user.Id,
                 CreatedOn = DateTime.Now,
                 Status = AppointmentStatus.InProgress
             };
             var add = await _context.Appointments.AddAsync(newAppointment);
-            await _context.SaveChangesAsync();//cancellationToken);
+
+            var save = await _context.SaveChangesAsync();//cancellationToken);
+
             return await GetAppointmentAsync(newAppointment.Id.ToString());
         }
 
         public async Task<AppointmentDto> GetAppointmentAsync(string id)
         {
             var appointment = await _context.Appointments.FindAsync(id);
+
             var procedure = await _context.ProcedureTypes.FindAsync(appointment.ProcedureId);
             var doctor = await _context.Users.FindAsync(appointment.DoctorId);
             var patient = await _context.Users.FindAsync(appointment.PatientId);
@@ -59,7 +63,7 @@ namespace Stomatology3.Repositories
             {
                 AppointmentStart = appointment.AppointmentStart,
                 ProcedureName = procedure.ProcedureName,
-                DoctorFullName = doctor.FullName,
+                DoctorFullName = doctor.FirstName + doctor.LastName,
                 PatientFullName = patient.FullName,
                 CreatedOn = appointment.CreatedOn,
                 Status = appointment.Status

@@ -18,6 +18,7 @@ using Stomatology3.Controllers.Auth;
 using Stomatology3.Repositories;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using Stomatology3.Services;
 
 namespace Stomatology3
 {
@@ -82,6 +83,7 @@ namespace Stomatology3
             services.AddSingleton<IJwtHandlerAuth>(new JwtHandlerAuth(Configuration.GetSection("Jwt:PrivateKey").Value));
             services.AddScoped<IAppointmentsRepository, AppointmentsRepository>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IUserService, UserService>();
 
             //services.AddAuthorization(options =>
             //{
